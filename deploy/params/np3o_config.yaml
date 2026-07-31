@@ -1,0 +1,32 @@
+# NP3O / BarlowTwins blind actor (LocomotionWithNP3O) deployed via TSController.
+# Two-input policy: forward(obs[1,45], obs_history[1,10*45]).
+# Validated in MuJoCo sim2sim (see ~/Alex/LocomotionWithNP3O/verify_deploy_mujoco.py).
+policy_name: "np3o_deploy.pt"
+use_genesis: True          # policy trained in Unitree SDK joint order (FR,FL,RR,RL) -> no real2sim remap
+dt: 0.02
+stand_kp: 60.0
+stand_kd: 5.0
+ctrl_kp: 40.0              # NP3O stiffness
+ctrl_kd: 1.0              # NP3O damping
+action_scale: 0.25
+hip_scale: 0.5            # NP3O hip_scale_reduction
+action_filter: 0.2       # NP3O low-pass: a_f = 0.2*a_prev + 0.8*a
+lin_vel_scale: 2.0       # NP3O obs_scales.lin_vel (commands)  -> half-stick ~= trained max (0.5 m/s)
+ang_vel_scale: 0.25
+dof_pos_scale: 1.0
+dof_vel_scale: 0.05
+frame_stack: 10          # NP3O history_len
+num_single_obs: 45
+# default joint angles, SDK order FR, FL, RR, RL (hip, thigh, calf)
+stand_pos: [
+    -0.1, 0.8, -1.5,
+     0.1, 0.8, -1.5,
+    -0.1, 1.0, -1.5,
+     0.1, 1.0, -1.5
+]
+sit_pos: [            # transition from damping to sitting
+    0.04, 1.3, -2.87,
+    -0.02, 1.29, -2.86,
+    -0.33, 1.27, -2.81,
+    0.32, 1.28, -2.87
+]

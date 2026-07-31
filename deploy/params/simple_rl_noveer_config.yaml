@@ -1,0 +1,32 @@
+# ISOLATION TEST: run the no_veer policy as a BARE velocity tracker.
+# No CBF, no MPPI, no nav -- the command comes ONLY from the keyboard/gamepad.
+# Purpose: does Jun12_..._no_veer lurch on its own (policy problem), or only when
+# the MPPI/CBF command path drives it (command-path problem)?
+# Drive: sequence 1 -> 2 -> 3, then 'w' = walk forward at 0.5 m/s (== cbf_vdes),
+#        'a'/'d' = turn, space = stop, 4 = damping/E-stop.
+# Every low-level knob below is byte-identical to your golden teleop config; the
+# ONLY change vs that config is policy_name. (No cbf_* keys -> all default false.)
+policy_name: "Jun12_12-33-21_no_veer_genesis_ite-1.pt"
+dt: 0.02
+stand_kp: 60.0
+stand_kd: 5.0
+ctrl_kp: 20
+ctrl_kd: 0.5
+action_scale: 0.25
+lin_vel_scale: 1.0
+ang_vel_scale: 0.25
+dof_pos_scale: 1.0
+dof_vel_scale: 0.05
+num_obs: 45
+stand_pos: [
+    0.0, 0.8, -1.5,
+    0.0, 0.8, -1.5,
+    0.0, 0.8, -1.5,
+    0.0, 0.8, -1.5
+]
+sit_pos: [
+    0.04, 1.3, -2.87,
+    -0.02, 1.29, -2.86,
+    -0.33, 1.27, -2.81,
+    0.32, 1.28, -2.87
+]

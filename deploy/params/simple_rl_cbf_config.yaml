@@ -1,0 +1,52 @@
+policy_name: "Jun12_12-33-21_no_veer_genesis_ite-1.pt"
+dt: 0.02
+stand_kp: 60.0
+stand_kd: 5.0
+ctrl_kp: 20
+ctrl_kd: 0.5
+# Scales, consistent with config file
+action_scale: 0.25
+lin_vel_scale: 1.0
+ang_vel_scale: 0.25
+dof_pos_scale: 1.0
+dof_vel_scale: 0.05
+num_obs: 45
+stand_pos: [
+    0.0,
+    0.8,
+    -1.5,
+    0.0,
+    0.8,
+    -1.5,
+    0.0,
+    0.8,
+    -1.5,
+    0.0,
+    0.8,
+    -1.5
+]
+sit_pos: [
+    0.04,
+    1.3,
+    -2.87,
+    -0.02,
+    1.29,
+    -2.86,
+    -0.33,
+    1.27,
+    -2.81,
+    0.32,
+    1.28,
+    -2.87
+]
+
+# ---- CBF safety filter ----
+# Virtual circular keep-out zone in the odometry (world) frame. The filter
+# minimally edits the velocity command so the body (x,y) cannot enter it.
+# Position comes from rt/sportmodestate; yaw from the IMU.
+cbf_enable: true
+cbf_cx: 2.0      # zone center x [m] (ahead of the start)
+cbf_cy: 0.0      # zone center y [m]
+cbf_r: 0.5       # zone radius [m]
+cbf_margin: 0.6   # robot bounding radius 0.39 + buffer -> whole body stays out of r=0.5 zone
+cbf_gamma: 2.0   # class-K gain alpha(h)=gamma*h

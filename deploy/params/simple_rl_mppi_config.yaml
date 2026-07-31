@@ -1,0 +1,70 @@
+policy_name: "Jun12_12-33-21_no_veer_genesis_ite-1.pt"
+dt: 0.02
+stand_kp: 60.0
+stand_kd: 5.0
+ctrl_kp: 20
+ctrl_kd: 0.5
+# Scales, consistent with config file
+action_scale: 0.25
+lin_vel_scale: 1.0
+ang_vel_scale: 0.25
+dof_pos_scale: 1.0
+dof_vel_scale: 0.05
+num_obs: 45
+stand_pos: [
+    0.0, 0.8, -1.5,
+    0.0, 0.8, -1.5,
+    0.0, 0.8, -1.5,
+    0.0, 0.8, -1.5
+]
+sit_pos: [
+    0.04, 1.3, -2.87,
+    -0.02, 1.29, -2.86,
+    -0.33, 1.27, -2.81,
+    0.32, 1.28, -2.87
+]
+
+# ---- CBF (shared geometry: margin/gamma + a single fallback keep-out) ----
+# Everything is in the robot's START frame (origin where RL control begins, +x
+# straight ahead). Position is dead-reckoned (rt/sportmodestate is dead in
+# low-level mode); yaw from the IMU.
+cbf_enable: true
+cbf_cx: 2.0             # aligns with the red cylinder drawn in scene_cbf.xml at (2,0)
+cbf_cy: 0.2             # small y-offset off the start->goal line (symmetry-breaking)
+cbf_r: 0.5
+cbf_margin: 0.4          # body bounding radius added to every obstacle's radius
+cbf_gamma: 2.0
+
+# ---- MPPI-CBF autonomous planner (supersedes the reactive cbf_nav) ----
+cbf_mppi: true
+# Position source. In sim2sim, rt/sportmodestate is TRUE ground truth -> use it, so the
+# planner avoids obstacles accurately. On HARDWARE low-level mode sportmodestate is dead,
+# so set this false (falls back to dead-reckoning, which drifts as the policy veers -> use
+# generous margins / short paths there until proper leg odometry is added).
+cbf_use_sm: true
+cbf_goal_x: 4.5          # ~14.8 ft ahead (you have 15 ft); stops ~0.3 m short -> ~13.8 ft
+cbf_goal_y: 0.0
+cbf_goal_tol: 0.30       # >= ~0.3 so the policy deadzone doesn't stall the last creep
+cbf_vdes: 0.5            # planner v_max (this policy's usable forward band)
+cbf_wmax: 1.0            # planner yaw-rate max
+# obstacle field as [x, y, r] (drawn radius; cbf_margin is added per obstacle).
+# Start with ONE obstacle, slightly offset off the start->goal line (a keep-out
+# EXACTLY on the line is a symmetry the sampler escapes only by luck).
+cbf_obstacles:
+  - [2.0, 0.2, 0.5]      # drawn as zone1 in scene_mppi2.xml
+  - [3.2, -0.4, 0.4]     # drawn as zone2 in scene_mppi2.xml
+  # (single-obstacle? comment the 2nd line out and run sim with scene_cbf.xml instead)
+# MPPI hyperparameters (validated in sim; K=384 is real-time-safe ~1 ms/plan)
+mppi_samples: 384
+mppi_horizon: 45
+mppi_dt: 0.15
+mppi_lambda: 8.0
+mppi_sigma_v: 0.3
+mppi_sigma_w: 0.6
+mppi_deadzone: 0.5
+mppi_w_near: 3.0      # soft keep-out penalty: lower = tighter/more direct path (hard CBF still guarantees clearance; 0 rides the boundary)
+mppi_band: 0.3
+mppi_w_head: 1.0
+mppi_w_smooth: 3.0
+mppi_smooth: 0.5
+mppi_replan_every: 7

@@ -1,0 +1,21 @@
+# Build output
+build/
+logs/
+
+# Python
+__pycache__/
+*.pyc
+
+# Trained policy weights (not redistributed)
+deploy/models/
+*.pt
+*.pth
+
+# Digital-twin raw recordings
+digital_twin/*.mp4
+*.mp4
+
+# Editor / OS
+.vscode/
+.claude/
+.DS_Store

@@ -1,0 +1,73 @@
+policy_name: "Jun12_12-33-21_no_veer_genesis_ite-1.pt"
+dt: 0.02
+stand_kp: 60.0
+stand_kd: 5.0
+ctrl_kp: 20
+ctrl_kd: 0.5
+action_scale: 0.25
+lin_vel_scale: 1.0
+ang_vel_scale: 0.25
+dof_pos_scale: 1.0
+dof_vel_scale: 0.05
+num_obs: 45
+stand_pos: [
+    0.0, 0.8, -1.5,
+    0.0, 0.8, -1.5,
+    0.0, 0.8, -1.5,
+    0.0, 0.8, -1.5
+]
+sit_pos: [
+    0.04, 1.3, -2.87,
+    -0.02, 1.29, -2.86,
+    -0.33, 1.27, -2.81,
+    0.32, 1.28, -2.87
+]
+
+# ============================ HARDWARE CONFIG ============================
+# Conservative first-deployment settings. Everything in the robot's START frame
+# (origin where you press L1+A / key 3, +x straight ahead).
+cbf_enable: true
+cbf_cx: 1.8
+cbf_cy: 0.3
+cbf_r: 0.4
+cbf_margin: 0.5          # EXTRA body margin to absorb dead-reckoning drift on hardware
+cbf_gamma: 2.0
+
+cbf_mppi: true
+# CRITICAL: false on hardware. sportmodestate is DEAD in low-level mode, so the planner
+# falls back to dead-reckoning (integrate commanded vel by IMU yaw). It DRIFTS as the
+# policy veers -> avoidance is approximate. Keep the course short + margins generous.
+cbf_use_sm: false
+
+cbf_goal_x: 4.0          # ~13 ft -- pushed out so the obstacle (now 2.8 m) + 0.9 m keep-out
+                         # doesn't swallow the goal. Robot needs ~4 m / 13 ft of clear runway.
+cbf_goal_y: 0.0
+cbf_goal_tol: 0.30
+cbf_vdes: 0.5            # = the policy's deadzone floor; it can't reliably walk slower than this
+                         # (commands below ~0.5 m/s don't move this policy), so don't set lower.
+cbf_wmax: 0.7            # was 0.4 -- too timid to turn around the obstacle in time (parked in front);
+                         # give it enough yaw authority to commit to the go-around
+
+# ONE obstacle, offset off the start->goal line. For an even safer FIRST walk, comment
+# it out entirely (obstacle-free) to confirm the robot just walks to the goal and stops.
+cbf_obstacles:
+  - [2.8, 0.3, 0.4]   # 2.8 m ahead (was 1.8), 0.3 m LEFT of start; drawn r 0.4 + margin 0.5 = 0.9 m keep-out
+
+# MPPI hyperparameters. w_near kept HIGH (wider berth) on purpose -> extra room around the
+# uncertain (drifting) obstacle position. K=384 ~1 ms/plan, runs in the background thread.
+mppi_samples: 384
+mppi_horizon: 45
+mppi_dt: 0.15
+mppi_lambda: 8.0
+mppi_sigma_v: 0.3
+mppi_sigma_w: 0.5        # was 0.25 -- too little yaw exploration meant MPPI never sampled
+                         # trajectories that actually turn around the obstacle. Raise it so the
+                         # planner discovers the go-around.
+mppi_deadzone: 0.5
+mppi_w_near: 6.0         # was 12.0 -- so high it made EVERY forward rollout look bad (it can't
+                         # turn enough), so the planner gave up and commanded ~0 = stall.
+mppi_band: 0.4
+mppi_w_head: 1.0         # was 2.0 -- let it turn AWAY from the straight goal line to go around.
+mppi_w_smooth: 3.0
+mppi_smooth: 0.6         # was 0.8 -- lighter so the avoidance turn isn't laggy.
+mppi_replan_every: 7
