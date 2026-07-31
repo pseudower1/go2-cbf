@@ -28,10 +28,21 @@ tracking.
 
 ## Not included
 
-To keep the repository lean and avoid redistributing third-party artifacts, the
+This is a **code-only** repository — the source for every stage is present, and
+the scripts regenerate their own figures and videos when you run them. The
 following are intentionally omitted (`.gitignore`d): compiled `build/` output,
-trained policy weights (`deploy/models/*.pt`), and the raw video recordings from
-the digital twin. The source for every stage is present.
+trained policy weights (`deploy/models/*.pt`), the raw video recordings from the
+digital twin, and generated plots/screenshots. See each folder's README for the
+setup and commands to reproduce everything locally.
+
+### External dependencies you provide
+
+- **Trained policy weights** (`deploy/models/*.pt`) — supply your own genesis_lr /
+  RL policy; the deployer and MuJoCo loop load it at runtime.
+- **MuJoCo scene XML** and **Unitree SDK2 / LibTorch** — install per
+  [`deploy/README.md`](deploy/README.md).
+- **Conda env `go2_cbf`** (python 3.10, mujoco 3.9, torch cpu, numpy, matplotlib)
+  for the simulation code — see [`sim/README.md`](sim/README.md).
 
 ## Acknowledgement
 

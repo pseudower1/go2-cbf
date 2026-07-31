@@ -19,3 +19,12 @@ digital_twin/*.mp4
 .vscode/
 .claude/
 .DS_Store
+
+# Generated plots / demo recordings (code-only repo)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.mp4
+*.mov
